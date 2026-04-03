@@ -2,11 +2,23 @@
 
 import json
 import re
+import sqlite3
+import os
 from typing import Optional
 from ..models import CalorieExtraction, CalorieRange, Combo, ComboItem
 from ..prompts import get_prompt
 from ..config import get_config
 from ..llm import get_llm
+
+_project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+DB_PATH = os.path.join(_project_root, "food_recall.db")
+
+
+def _get_db_connection():
+    """获取数据库连接"""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 def extract_calorie(state: dict) -> dict:
@@ -92,11 +104,48 @@ def sql_recall(state: dict) -> dict:
     config = get_config()
     max_candidates = config.recall.max_candidates
 
-    # TODO: 接入真实数据库
-    # 模拟返回候选套餐
-    mock_candidates = _generate_mock_candidates(calorie_range, max_candidates)
+    if not os.path.exists(DB_PATH):
+        mock_candidates = _generate_mock_candidates(calorie_range, max_candidates)
+        return {"candidates": mock_candidates}
 
-    return {"candidates": mock_candidates}
+    try:
+        conn = _get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT combo_id, combo_name, items, tags, calories, sales_volume
+            FROM combos
+            WHERE calories >= ? AND calories <= ? AND status = 'on_shelf'
+            ORDER BY sales_volume DESC
+            LIMIT ?
+        """, (calorie_range.lower_bound, calorie_range.upper_bound, max_candidates))
+
+        rows = cursor.fetchall()
+        conn.close()
+
+        candidates = []
+        for row in rows:
+            items_str = row["items"] if isinstance(row["items"], str) else ""
+            items_list = [item.strip() for item in items_str.split(",") if item.strip()]
+            tags_str = row["tags"] if isinstance(row["tags"], str) else ""
+            tags_list = [tag.strip() for tag in tags_str.split(",") if tag.strip()]
+
+            candidates.append(Combo(
+                combo_id=row["combo_id"],
+                combo_name=row["combo_name"],
+                items=[ComboItem(name=i) for i in items_list],
+                tags=tags_list,
+                calories=row["calories"],
+                sales_volume=row["sales_volume"]
+            ))
+
+        return {"candidates": candidates}
+
+    except Exception as e:
+        import logging
+        logging.getLogger("food_recall").error(f"数据库查询失败: {str(e)}")
+        mock_candidates = _generate_mock_candidates(calorie_range, max_candidates)
+        return {"candidates": mock_candidates}
 
 
 def _generate_mock_candidates(calorie_range: CalorieRange, limit: int) -> list[Combo]:
