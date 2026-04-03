@@ -4,7 +4,7 @@ import sqlite3
 import os
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent.parent.parent / "food_recall.db"
+DB_PATH = Path(__file__).parent.parent / "food_recall.db"
 
 COMBOS_DATA = [
     {

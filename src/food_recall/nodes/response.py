@@ -127,6 +127,7 @@ def _generate_perfect_response(state: dict, top_k: int) -> dict:
 def _generate_fallback_response(state: dict) -> dict:
     """分支 B: 妥协推荐 - 选取部分匹配的套餐，解释差异并询问用户"""
     partial_matches = state.get("partial_matches", [])
+    candidates = state.get("candidates", [])
     user_input = state.get("user_input", "")
 
     if not partial_matches:
@@ -135,12 +136,15 @@ def _generate_fallback_response(state: dict) -> dict:
     best_match = partial_matches[0]
     match_summary = _format_match_summary(best_match)
 
+    combo_list = _format_combo_list(partial_matches[:5])
+
     llm_client = get_llm()
     if llm_client is not None:
         prompt = get_prompt(
             "generate_fallback",
             user_demands=user_input,
-            match_summary=match_summary
+            match_summary=match_summary,
+            combo_list=combo_list
         )
         response = llm_client.invoke(prompt)
         return {"final_response": response}
@@ -162,12 +166,20 @@ def _generate_fallback_response(state: dict) -> dict:
 def _generate_no_match_response(state: dict) -> dict:
     """分支 C: 无匹配 - 诚恳告知用户无法匹配，并提供调整建议"""
     user_input = state.get("user_input", "")
+    candidates = state.get("candidates", [])
+
+    combo_list_lines = []
+    for combo in candidates[:5]:
+        items_str = ", ".join([item.name if hasattr(item, 'name') else str(item) for item in combo.items])
+        combo_list_lines.append(f"- {combo.combo_name} (单品: {items_str})")
+    combo_list = "\n".join(combo_list_lines) if combo_list_lines else "暂无候选套餐"
 
     llm_client = get_llm()
     if llm_client is not None:
         prompt = get_prompt(
             "generate_no_match",
-            user_input=user_input
+            user_input=user_input,
+            combo_list=combo_list
         )
         response = llm_client.invoke(prompt)
         return {"final_response": response}
