@@ -97,18 +97,55 @@ python scripts/web_server.py
 
 ## 配置说明
 
-环境变量配置 (`.env`):
+所有配置通过环境变量设置，复制 `.env.example` 为 `.env` 后填入值。
+
+### LLM 配置
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
 | `LLM_PROVIDER` | LLM 提供商 (openai/anthropic) | openai |
 | `LLM_MODEL` | 模型名称 | gpt-4o-mini |
-| `LLM_BASE_URL` | 自定义 API 地址 | - |
+| `LLM_BASE_URL` | 自定义 API 地址（用于代理或兼容 API） | - |
 | `LLM_API_KEY` | API Key | - |
-| `LLM_TEMPERATURE` | 生成温度 | 0.7 |
-| `MAX_CANDIDATES` | SQL 召回上限 | 60 |
-| `MAX_CONCURRENCY` | 最大并发数 | 20 |
-| `VALIDATION_TIMEOUT_MS` | 核验超时 (毫秒) | 3000 |
+| `LLM_TEMPERATURE` | 生成温度（0.0-1.0） | 0.7 |
+
+### 召回配置
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `MAX_CANDIDATES` | SQL 召回候选套餐上限 | 60 |
+| `LOWER_EXPAND` | 热量下界扩展（目标热量 - LOWER_EXPAND） | 150 |
+| `UPPER_EXPAND` | 热量上界扩展（目标热量 + UPPER_EXPAND） | 100 |
+
+### 核验配置
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `MAX_CONCURRENCY` | 异步核验最大并发数 | 20 |
+| `VALIDATION_TIMEOUT_MS` | 核验阶段超时时间（毫秒） | 3000 |
+| `VALIDATION_ENABLE_CACHE` | 是否启用核验结果缓存 | true |
+| `VALIDATION_CACHE_TTL_SEC` | 缓存有效期（秒） | 300 |
+| `VALIDATION_ALLOW_PARTIAL` | 是否允许部分匹配进入候选 | true |
+
+### 路由配置
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `FALLBACK_THRESHOLD` | 进入 fallback 的绝对阈值（满足几条需求） | 1 |
+| `FALLBACK_RATIO` | 进入 fallback 的比例阈值（0.0-1.0） | 0.5 |
+| `FALLBACK_MIN_MATCH` | fallback 最低匹配条数（确保至少满足几条） | 2 |
+
+### 生成配置
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `TOP_K` | 最终推荐的套餐数量 | 5 |
+
+### 数据库配置
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `DATABASE_PATH` | 数据库路径（绝对路径或相对于项目根目录） | food_recall.db |
 
 ## 日志
 
