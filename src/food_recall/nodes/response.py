@@ -133,8 +133,7 @@ def _generate_fallback_response(state: dict) -> dict:
     if not partial_matches:
         return _generate_no_match_response(state)
 
-    best_match = partial_matches[0]
-    match_summary = _format_match_summary(best_match)
+    match_summary = "\n\n".join([_format_match_summary(m) for m in partial_matches[:5]])
 
     combo_list = _format_combo_list(partial_matches[:5])
 
@@ -149,15 +148,15 @@ def _generate_fallback_response(state: dict) -> dict:
         response = llm_client.invoke(prompt)
         return {"final_response": response}
 
-    satisfied = [r.demand for r in best_match.results if r.match]
-    unsatisfied = best_match.unmet_reasons
+    satisfied = [r.demand for r in partial_matches[0].results if r.match]
+    unsatisfied = partial_matches[0].unmet_reasons
 
     response_parts = ["抱歉，完全符合您需求的套餐暂时没有找到。\n"]
     if satisfied:
         response_parts.append(f"以下需求已满足：{', '.join(satisfied)}")
     if unsatisfied:
         response_parts.append(f"以下需求暂未满足：{', '.join(unsatisfied)}")
-    response_parts.append(f"\n为您推荐：{best_match.combo_name}")
+    response_parts.append(f"\n为您推荐：{partial_matches[0].combo_name}")
     response_parts.append("您看这个替代方案可以接受吗？")
 
     return {"final_response": "\n".join(response_parts)}
@@ -211,14 +210,18 @@ def _format_combo_list(combos: List[ComboValidation]) -> str:
 
 
 def _format_match_summary(combo: ComboValidation) -> str:
-    """格式化匹配摘要"""
+    """格式化匹配摘要，包含套餐详细信息供互补性分析"""
     satisfied = [r.demand for r in combo.results if r.match]
     unsatisfied = combo.unmet_reasons
 
-    parts = []
-    if satisfied:
-        parts.append(f"满足：{', '.join(satisfied)}")
-    if unsatisfied:
-        parts.append(f"不满足：{', '.join(unsatisfied)}")
+    items_str = ", ".join([item.name for item in combo.results[0].demand.split()]) if combo.results else ""
+    combo_info = f"套餐名称：{combo.combo_name}，单品：{items_str}，标签：{combo.tags}"
 
-    return "; ".join(parts)
+    parts = [f"【{combo.combo_name}】({combo.score}/{combo.total_demands}项满足)"]
+    parts.append(f"  套餐信息：{items_str if items_str else '无单品信息'}，标签：{combo.tags}")
+    if satisfied:
+        parts.append(f"  ✅ 满足：{', '.join(satisfied)}")
+    if unsatisfied:
+        parts.append(f"  ❌ 不满足：{', '.join(unsatisfied)}")
+
+    return "\n".join(parts)

@@ -3,20 +3,16 @@
 import json
 import re
 import sqlite3
-import os
 from typing import Optional
 from ..models import CalorieExtraction, CalorieRange, Combo, ComboItem
 from ..prompts import get_prompt
-from ..config import get_config
+from ..config import get_config, get_database_path
 from ..llm import get_llm
-
-_project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-DB_PATH = os.path.join(_project_root, "food_recall.db")
 
 
 def _get_db_connection():
     """获取数据库连接"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_database_path())
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -104,7 +100,7 @@ def sql_recall(state: dict) -> dict:
     config = get_config()
     max_candidates = config.recall.max_candidates
 
-    if not os.path.exists(DB_PATH):
+    if not get_config().database.path:
         mock_candidates = _generate_mock_candidates(calorie_range, max_candidates)
         return {"candidates": mock_candidates}
 

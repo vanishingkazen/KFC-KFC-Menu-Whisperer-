@@ -52,6 +52,12 @@ class PromptConfig(BaseModel):
     enable_ab_test: bool = False
 
 
+class DatabaseConfig(BaseModel):
+    """数据库配置"""
+    path: str = "food_recall.db"
+    timeout_sec: float = 30.0
+
+
 class SystemConfig(BaseModel):
     """全局配置"""
     llm: LLMConfig = LLMConfig()
@@ -60,6 +66,7 @@ class SystemConfig(BaseModel):
     routing: RoutingConfig = RoutingConfig()
     generation: GenerationConfig = GenerationConfig()
     prompts: PromptConfig = PromptConfig()
+    database: DatabaseConfig = DatabaseConfig()
 
 
 # 全局配置实例
@@ -108,6 +115,9 @@ def load_config_from_env() -> SystemConfig:
             top_k=int(os.getenv("TOP_K", "5")),
             temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
         ),
+        database=DatabaseConfig(
+            path=os.getenv("DATABASE_PATH", "food_recall.db"),
+        ),
     )
 
 
@@ -116,3 +126,20 @@ def init_from_env() -> SystemConfig:
     global _config
     _config = load_config_from_env()
     return _config
+
+
+def get_database_path() -> str:
+    """
+    获取数据库绝对路径
+
+    优先使用环境变量中的绝对路径，否则相对于项目根目录
+    """
+    config = get_config()
+    db_path = config.database.path
+
+    if os.path.isabs(db_path):
+        return db_path
+
+    current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    project_root = os.path.dirname(current_dir)
+    return os.path.join(project_root, db_path)

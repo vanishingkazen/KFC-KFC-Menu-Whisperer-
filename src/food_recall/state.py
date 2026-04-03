@@ -1,6 +1,6 @@
 """LangGraph State 定义"""
 
-from typing import TypedDict, List, Optional
+from typing import TypedDict, List, Optional, Dict
 from .models import (
     Combo,
     Demand,
@@ -32,6 +32,9 @@ class AgentState(TypedDict):
     perfect_matches: Optional[List[ComboValidation]]     # 满分套餐
     partial_matches: Optional[List[ComboValidation]]     # 部分匹配
     final_response: Optional[str]          # 最终响应
+
+    # ===== 耗时统计 =====
+    timing: Optional[Dict[str, float]]     # 各阶段耗时 (秒)
 
 
 # ============== 各节点 Input/Output 定义 ==============

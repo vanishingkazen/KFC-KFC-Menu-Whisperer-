@@ -1,8 +1,9 @@
 """阶段二：精排核验层节点"""
 
 import json
+import asyncio
+import time
 from typing import List
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from ..models import (
     Demand,
     Combo,
@@ -12,6 +13,9 @@ from ..models import (
 from ..prompts import get_prompt
 from ..config import get_config
 from ..llm import get_llm
+from ..logging_config import get_logger
+
+logger = get_logger("food_recall")
 
 
 def extract_demands(state: dict) -> dict:
@@ -62,14 +66,14 @@ def _rule_based_demand_extraction(user_input: str) -> List[Demand]:
     return demands
 
 
-def validate_batch(state: dict) -> dict:
+async def validate_batch(state: dict) -> dict:
     """
-    Step 2.2 - 2.4: 并发核验 + 汇总
+    Step 2.2 - 2.4: 异步并发核验 + 汇总
 
     Input:  state["candidates"] + state["demands"]
     Output: state["validation_results"]
 
-    机制：启动异步并发（协程/线程池），为每个候选套餐发起独立的核验任务
+    机制：使用 asyncio 异步并发，为每个候选套餐发起独立的核验任务
     """
     candidates = state.get("candidates", [])
     demands = state.get("demands", [])
@@ -79,42 +83,108 @@ def validate_batch(state: dict) -> dict:
 
     config = get_config()
     max_concurrency = config.validation.max_concurrency
-    timeout_ms = config.validation.timeout_ms
+    timeout_sec = config.validation.timeout_ms / 1000
 
-    validation_results: List[ComboValidation] = []
+    semaphore = asyncio.Semaphore(max_concurrency)
 
-    # 并发执行核验
-    with ThreadPoolExecutor(max_workers=max_concurrency) as executor:
-        future_to_combo = {
-            executor.submit(validate_single_combo, combo, demands): combo
-            for combo in candidates
-        }
+    async def validate_with_timing(combo: Combo) -> ComboValidation:
+        start_time = time.time()
+        try:
+            result = await validate_single_combo_async(combo, demands)
+            elapsed = time.time() - start_time
+            logger.info(f"[核验] {combo.combo_name} 完成，耗时 {elapsed:.3f}s")
+            return result
+        except Exception as e:
+            elapsed = time.time() - start_time
+            logger.error(f"[核验] {combo.combo_name} 失败 ({elapsed:.3f}s): {str(e)}")
+            return ComboValidation(
+                combo_id=combo.combo_id,
+                combo_name=combo.combo_name,
+                score=0,
+                total_demands=len(demands),
+                results=[],
+                unmet_reasons=[f"核验失败: {str(e)}"]
+            )
 
-        for future in as_completed(future_to_combo, timeout=timeout_ms/1000):
-            try:
-                result = future.result()
-                validation_results.append(result)
-            except Exception as e:
-                # 单个套餐核验失败，记录日志但继续
-                combo = future_to_combo[future]
-                validation_results.append(ComboValidation(
-                    combo_id=combo.combo_id,
-                    combo_name=combo.combo_name,
-                    score=0,
-                    total_demands=len(demands),
-                    results=[],
-                    unmet_reasons=[f"核验失败: {str(e)}"]
-                ))
+    async def bounded_validate(combo: Combo) -> ComboValidation:
+        async with semaphore:
+            return await validate_with_timing(combo)
 
-    # 按分数排序
+    try:
+        tasks = [bounded_validate(combo) for combo in candidates]
+        validation_results = await asyncio.wait_for(
+            asyncio.gather(*tasks),
+            timeout=timeout_sec
+        )
+    except asyncio.TimeoutError:
+        logger.warning(f"[核验] 批量核验超时 ({timeout_sec}s)，返回已完成的结果")
+        validation_results = []
+
     validation_results.sort(key=lambda x: x.score, reverse=True)
-
     return {"validation_results": validation_results}
+
+
+async def validate_single_combo_async(combo: Combo, demands: List[Demand]) -> ComboValidation:
+    """
+    Step 2.3: 单个套餐的异步核验
+
+    对每条需求进行布尔匹配，逐条异步判断是否满足
+
+    Args:
+        combo: 套餐信息
+        demands: 需求列表
+
+    Returns:
+        套餐核验结果
+    """
+    results: List[ValidationResult] = []
+    unmet_reasons: List[str] = []
+
+    llm_client = get_llm()
+
+    for demand in demands:
+        if llm_client is not None:
+            prompt = get_prompt(
+                "validate_single",
+                single_demand=demand.content,
+                combo_name=combo.combo_name,
+                items=",".join([item.name for item in combo.items]),
+                tags=",".join(combo.tags)
+            )
+            response = await llm_client.ainvoke(prompt)
+            result = json.loads(response) if isinstance(response, str) else json.loads(response.content)
+            match_result = {
+                "match": bool(result.get("match", 0)),
+                "reason": result.get("reason", "")
+            }
+        else:
+            match_result = _rule_based_match(demand.content, combo)
+
+        results.append(ValidationResult(
+            demand_id=demand.demand_id,
+            demand=demand.content,
+            match=match_result["match"],
+            reason=match_result["reason"]
+        ))
+
+        if not match_result["match"]:
+            unmet_reasons.append(f"未满足: {demand.content}")
+
+    score = sum(1 for r in results if r.match)
+
+    return ComboValidation(
+        combo_id=combo.combo_id,
+        combo_name=combo.combo_name,
+        score=score,
+        total_demands=len(demands),
+        results=results,
+        unmet_reasons=unmet_reasons
+    )
 
 
 def validate_single_combo(combo: Combo, demands: List[Demand]) -> ComboValidation:
     """
-    Step 2.3: 单个套餐的核验
+    Step 2.3: 单个套餐的核验（同步版本，用于 fallback）
 
     对每条需求进行布尔匹配，逐条判断是否满足
 

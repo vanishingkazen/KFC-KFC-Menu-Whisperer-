@@ -2,9 +2,13 @@
 
 import sqlite3
 import os
+import sys
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent.parent / "food_recall.db"
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
+from food_recall.config import get_database_path
+
 
 COMBOS_DATA = [
     {
@@ -212,11 +216,12 @@ COMBOS_DATA = [
 
 def init_database():
     """初始化数据库"""
-    if DB_PATH.exists():
-        DB_PATH.unlink()
-        print(f"删除旧数据库: {DB_PATH}")
+    db_path = get_database_path()
+    if os.path.exists(db_path):
+        os.remove(db_path)
+        print(f"删除旧数据库: {db_path}")
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -259,15 +264,15 @@ def init_database():
 
     conn.close()
 
-    print(f"数据库初始化完成: {DB_PATH}")
+    print(f"数据库初始化完成: {db_path}")
     print(f"共插入 {count} 条套餐数据")
 
-    return DB_PATH
+    return db_path
 
 
 def query_combos(lower_bound: int, upper_bound: int, limit: int = 60):
     """查询符合条件的套餐"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_database_path())
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 

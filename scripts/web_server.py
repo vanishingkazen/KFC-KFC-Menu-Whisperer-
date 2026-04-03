@@ -12,27 +12,26 @@ load_dotenv()
 import sqlite3
 from flask import Flask, request, jsonify, render_template
 from food_recall.workflow import run_workflow_sync
-from food_recall.config import init_from_env
+from food_recall.config import init_from_env, get_database_path
 
 SCRIPT_DIR = Path(__file__).parent
 app = Flask(__name__, template_folder=str(SCRIPT_DIR / "templates"), static_folder=str(SCRIPT_DIR / "static"))
 
-DB_PATH = Path(__file__).parent.parent / "food_recall.db"
-
 
 def get_db_connection():
     """获取数据库连接"""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_database_path())
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def init_db():
     """初始化数据库"""
-    if DB_PATH.exists():
+    db_path = get_database_path()
+    if os.path.exists(db_path):
         return
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     cursor.execute("""
