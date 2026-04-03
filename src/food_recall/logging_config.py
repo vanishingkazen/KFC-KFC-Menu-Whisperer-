@@ -56,13 +56,17 @@ def setup_logging(
         timestamp = datetime.now().strftime("%Y%m%d")
         log_file = os.path.join(LOG_DIR, f"{name}_{timestamp}.log")
 
-        file_handler = UnbufferedFileHandler(
-            log_file,
-            encoding="utf-8"
-        )
-        file_handler.setLevel(level)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+        try:
+            file_handler = UnbufferedFileHandler(
+                log_file,
+                encoding="utf-8"
+            )
+            file_handler.setLevel(level)
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+        except PermissionError:
+            import warnings
+            warnings.warn(f"无法创建日志文件 {log_file}，将只输出到控制台")
 
     return logger
 

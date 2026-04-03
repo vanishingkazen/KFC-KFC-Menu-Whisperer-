@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍰 餐品推荐系统 - 测试后台</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>餐品推荐系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -13,300 +13,387 @@
         }
 
         body {
-            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #FFF5F5 0%, #FFF0F7 50%, #F5F0FF 100%);
-            min-height: 100vh;
-            color: #5D4E6D;
-            line-height: 1.6;
+            font-family: 'Google Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff;
+            color: #202124;
+            line-height: 1.58;
+            font-size: 14px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 30px 20px;
+            padding: 0 24px;
         }
 
         /* Header */
         .header {
-            text-align: center;
-            margin-bottom: 40px;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 16px 0;
+            background: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #FF6B9D, #C44569, #FF6B9D);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #8B7B9B;
-            font-size: 1.1rem;
-        }
-
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: 24px;
-            padding: 28px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 32px rgba(200, 150, 200, 0.15);
-            border: 2px solid rgba(255, 107, 157, 0.1);
-        }
-
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #C44569;
-        }
-
-        .card-title .icon {
-            font-size: 1.5rem;
-        }
-
-        /* Table */
-        .combo-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 15px;
-            overflow: hidden;
-            border-radius: 16px;
-        }
-
-        .combo-table thead th {
-            background: linear-gradient(135deg, #FF6B9D, #FF8FB1);
-            color: white;
-            padding: 16px 12px;
+            font-size: 1.25rem;
             font-weight: 500;
-            text-align: left;
-        }
-
-        .combo-table thead th:first-child {
-            border-radius: 16px 0 0 0;
-        }
-
-        .combo-table thead th:last-child {
-            border-radius: 0 16px 0 0;
-        }
-
-        .combo-table tbody tr {
-            transition: all 0.2s ease;
-        }
-
-        .combo-table tbody tr:hover {
-            background: rgba(255, 107, 157, 0.05);
-        }
-
-        .combo-table tbody td {
-            padding: 14px 12px;
-            border-bottom: 1px solid rgba(200, 150, 200, 0.1);
-        }
-
-        .combo-table tbody tr:last-child td:first-child {
-            border-radius: 0 0 0 16px;
-        }
-
-        .combo-table tbody tr:last-child td:last-child {
-            border-radius: 0 0 16px 0;
-        }
-
-        .combo-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Tags */
-        .tag {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .tag-pink {
-            background: rgba(255, 107, 157, 0.15);
-            color: #C44569;
-        }
-
-        .tag-green {
-            background: rgba(46, 204, 113, 0.15);
-            color: #27AE60;
-        }
-
-        .tag-yellow {
-            background: rgba(241, 196, 15, 0.15);
-            color: #D4A500;
-        }
-
-        .tag-purple {
-            background: rgba(155, 89, 182, 0.15);
-            color: #8E44AD;
-        }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .status-on {
-            background: rgba(46, 204, 113, 0.15);
-            color: #27AE60;
-        }
-
-        .status-off {
-            background: rgba(189, 195, 199, 0.3);
-            color: #7F8C8D;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            font-family: inherit;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #FF6B9D, #FF8FB1);
-            color: white;
-            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(155, 89, 182, 0.1);
-            color: #8E44AD;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(155, 89, 182, 0.2);
-        }
-
-        .btn-danger {
-            background: rgba(231, 76, 60, 0.1);
-            color: #E74C3C;
-        }
-
-        .btn-danger:hover {
-            background: rgba(231, 76, 60, 0.2);
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.8rem;
-        }
-
-        /* Input */
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: #5D4E6D;
-            font-size: 0.9rem;
-        }
-
-        .input-group input,
-        .input-group textarea,
-        .input-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid rgba(200, 150, 200, 0.2);
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: all 0.2s ease;
-            background: rgba(255, 255, 255, 0.8);
-        }
-
-        .input-group input:focus,
-        .input-group textarea:focus,
-        .input-group select:focus {
-            outline: none;
-            border-color: #FF6B9D;
-            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
-        }
-
-        /* Test Section */
-        .test-input-wrapper {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .test-input-wrapper input {
-            flex: 1;
-            padding: 16px 20px;
-            border: 2px solid rgba(255, 107, 157, 0.2);
-            border-radius: 16px;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .test-input-wrapper input:focus {
-            outline: none;
-            border-color: #FF6B9D;
-            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
-        }
-
-        .test-btn {
-            padding: 16px 32px;
-            background: linear-gradient(135deg, #FF6B9D, #FF8FB1);
-            color: white;
-            border: none;
-            border-radius: 16px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.35);
-            transition: all 0.2s ease;
+            color: #202124;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .test-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(255, 107, 157, 0.45);
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #4285F4, #34A853);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
         }
 
-        .test-btn:active {
-            transform: translateY(0);
+        .header-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .header-links a {
+            color: #5f6368;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .header-links a:hover {
+            color: #4285F4;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 48px 0 32px;
+            text-align: center;
+        }
+
+        .search-logo {
+            margin-bottom: 32px;
+        }
+
+        .search-logo h1 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: #202124;
+        }
+
+        .search-logo span {
+            color: #4285F4;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            padding-left: 48px;
+            font-size: 1rem;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            outline: none;
+            transition: box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9aa0a6;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+
+        .search-btn:hover {
+            background: #3367d6;
+        }
+
+        /* Results Section */
+        .results-section {
+            padding: 24px 0;
+        }
+
+        .result-card {
+            background: #ffffff;
+            border: 1px solid #dfe1e5;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 16px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-query {
+            flex: 1;
+            color: #202124;
+            font-size: 1rem;
+        }
+
+        .result-query strong {
+            color: #4285F4;
+        }
+
+        .route-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .route-perfect {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .route-fallback {
+            background: #fef7e0;
+            color: #b05a00;
+        }
+
+        .route-nomatch {
+            background: #fce8e6;
+            color: #c5221f;
+        }
+
+        /* Match Cards */
+        .match-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .match-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .match-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .match-icon.perfect {
+            background: #e6f4ea;
+        }
+
+        .match-icon.partial {
+            background: #fef7e0;
+        }
+
+        .match-content {
+            flex: 1;
+        }
+
+        .match-name {
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .match-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .match-tag {
+            background: #e8eaed;
+            color: #5f6368;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .match-calories {
+            color: #ea4335;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .demand-list {
+            margin-top: 12px;
+        }
+
+        .demand-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 0;
+            font-size: 0.875rem;
+        }
+
+        .demand-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        .demand-icon.pass {
+            background: #137333;
+            color: white;
+        }
+
+        .demand-icon.fail {
+            background: #c5221f;
+            color: white;
+        }
+
+        .demand-text {
+            color: #5f6368;
+        }
+
+        .demand-reason {
+            color: #9aa0a6;
+            font-size: 0.75rem;
+            margin-left: 26px;
+        }
+
+        /* Final Response */
+        .final-response {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-top: 20px;
+            border-left: 4px solid #4285F4;
+        }
+
+        .final-response-label {
+            color: #5f6368;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .final-response-content {
+            color: #202124;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        /* Demands Section */
+        .demands-section {
+            margin-top: 16px;
+        }
+
+        .demands-label {
+            color: #5f6368;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+        }
+
+        .demands-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .demand-tag {
+            background: #e8f0fe;
+            color: #1967d2;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.875rem;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .stat-item {
+            color: #5f6368;
+            font-size: 0.875rem;
+        }
+
+        .stat-value {
+            color: #202124;
+            font-weight: 500;
         }
 
         /* Loading */
         #loading {
             display: none;
             text-align: center;
-            padding: 40px;
+            padding: 60px;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 107, 157, 0.1);
-            border-top-color: #FF6B9D;
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #dfe1e5;
+            border-top-color: #4285F4;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin: 0 auto 16px;
@@ -316,190 +403,157 @@
             to { transform: rotate(360deg); }
         }
 
-        .loading-text {
-            color: #8B7B9B;
-            font-size: 1rem;
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #5f6368;
         }
 
-        /* Response Area */
-        .response-area {
-            background: linear-gradient(135deg, #FFF5F8, #FFF0F7);
-            border: 2px dashed rgba(255, 107, 157, 0.3);
-            border-radius: 20px;
-            padding: 24px;
-            margin-top: 20px;
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
         }
 
-        .response-area:empty {
-            display: none;
+        /* Card Section */
+        .card-section {
+            padding: 32px 0;
         }
 
-        /* Route Badge */
-        .route-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border-radius: 24px;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .route-perfect {
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(39, 174, 96, 0.15));
-            color: #27AE60;
-            border: 2px solid rgba(46, 204, 113, 0.3);
-        }
-
-        .route-fallback {
-            background: linear-gradient(135deg, rgba(241, 196, 15, 0.15), rgba(230, 180, 0, 0.15));
-            color: #D4A500;
-            border: 2px solid rgba(241, 196, 15, 0.3);
-        }
-
-        .route-nomatch {
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.15), rgba(192, 57, 43, 0.15));
-            color: #E74C3C;
-            border: 2px solid rgba(231, 76, 60, 0.3);
-        }
-
-        /* Demand Tags */
-        .demand-tag {
-            display: inline-block;
-            background: linear-gradient(135deg, #C44569, #D4658A);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin: 4px;
-            box-shadow: 0 2px 8px rgba(196, 69, 105, 0.25);
-        }
-
-        /* Match Card */
-        .match-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin: 16px 0;
-            border: 2px solid;
-            transition: all 0.2s ease;
-        }
-
-        .match-card.perfect {
-            border-color: rgba(46, 204, 113, 0.3);
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.05), rgba(255, 255, 255, 1));
-        }
-
-        .match-card.partial {
-            border-color: rgba(241, 196, 15, 0.3);
-            background: linear-gradient(135deg, rgba(241, 196, 15, 0.05), rgba(255, 255, 255, 1));
-        }
-
-        .match-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        .match-header {
+        .section-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
 
-        .match-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #5D4E6D;
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
         }
 
-        .match-score {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9rem;
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+            font-family: inherit;
         }
 
-        .match-score.full {
-            background: linear-gradient(135deg, #2ECC71, #27AE60);
+        .btn-primary {
+            background: #4285F4;
             color: white;
         }
 
-        .match-score.partial {
-            background: linear-gradient(135deg, #F39C12, #E67E22);
-            color: white;
+        .btn-primary:hover {
+            background: #3367d6;
         }
 
-        .match-detail {
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .btn-secondary {
+            background: #ffffff;
+            color: #4285F4;
+            border: 1px solid #dfe1e5;
         }
 
-        .demand-check {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .btn-secondary:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-danger {
+            background: #ffffff;
+            color: #c5221f;
+            border: 1px solid #dfe1e5;
+        }
+
+        .btn-danger:hover {
+            background: #fce8e6;
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border: 1px solid #dfe1e5;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            color: #5f6368;
+            font-weight: 500;
+            text-align: left;
+            padding: 12px 16px;
             font-size: 0.75rem;
-            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #dfe1e5;
         }
 
-        .demand-check.pass {
-            background: linear-gradient(135deg, #2ECC71, #27AE60);
-            color: white;
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #202124;
+            font-size: 0.875rem;
         }
 
-        .demand-check.fail {
-            background: linear-gradient(135deg, #E74C3C, #C0392B);
-            color: white;
+        .data-table tr:last-child td {
+            border-bottom: none;
         }
 
-        .demand-text {
-            color: #5D4E6D;
+        .data-table tr:hover {
+            background: #f8f9fa;
         }
 
-        .demand-reason {
-            color: #8B7B9B;
-            font-size: 0.85rem;
-            margin-left: 30px;
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 4px;
         }
 
-        .unmet-reasons {
-            margin-top: 12px;
-            padding: 12px;
-            background: rgba(231, 76, 60, 0.08);
-            border-radius: 12px;
-            color: #E74C3C;
-            font-size: 0.9rem;
+        .tag-blue {
+            background: #e8f0fe;
+            color: #1967d2;
         }
 
-        /* Final Response */
-        .final-response {
-            background: linear-gradient(135deg, #FF6B9D, #C44569);
-            color: white;
-            padding: 24px;
-            border-radius: 20px;
-            margin-top: 24px;
-            font-size: 1.05rem;
-            line-height: 1.8;
-            box-shadow: 0 8px 30px rgba(196, 69, 105, 0.3);
+        .tag-green {
+            background: #e6f4ea;
+            color: #137333;
         }
 
-        .final-response-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
+        .tag-yellow {
+            background: #fef7e0;
+            color: #b05a00;
         }
 
-        .final-response-content {
-            white-space: pre-wrap;
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-on {
+            background: #e6f4ea;
+            color: #137333;
+        }
+
+        .status-off {
+            background: #e8eaed;
+            color: #5f6368;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            margin-right: 4px;
         }
 
         /* Modal */
@@ -510,8 +564,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(93, 78, 109, 0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.4);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -519,25 +572,13 @@
 
         .modal-content {
             background: white;
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 520px;
+            border-radius: 8px;
+            padding: 28px;
+            max-width: 480px;
             width: 90%;
-            max-height: 85vh;
+            max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(93, 78, 109, 0.3);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            box-shadow: 0 7px 12px rgba(0, 0, 0, 0.15);
         }
 
         .modal-header {
@@ -548,156 +589,159 @@
         }
 
         .modal-header h3 {
-            font-size: 1.3rem;
-            color: #C44569;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #202124;
         }
 
         .modal-close {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: rgba(200, 150, 200, 0.1);
+            background: transparent;
             border: none;
             cursor: pointer;
-            font-size: 1.2rem;
-            color: #8B7B9B;
-            transition: all 0.2s ease;
+            font-size: 1.25rem;
+            color: #5f6368;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .modal-close:hover {
-            background: rgba(231, 76, 60, 0.1);
-            color: #E74C3C;
+            background: #f1f3f4;
         }
 
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #8B7B9B;
-        }
-
-        .empty-state .icon {
-            font-size: 3rem;
-            margin-bottom: 12px;
-        }
-
-        /* Section Divider */
-        .section-title {
+        .modal-actions {
             display: flex;
-            align-items: center;
+            justify-content: flex-end;
             gap: 12px;
-            margin: 30px 0 20px;
-            font-size: 1.1rem;
-            color: #8B7B9B;
+            margin-top: 24px;
         }
 
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 2px;
-            background: linear-gradient(90deg, rgba(200, 150, 200, 0.2), transparent);
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #5f6368;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dfe1e5;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #4285F4;
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
+            .header-links {
+                display: none;
             }
 
-            .test-input-wrapper {
-                flex-direction: column;
+            .search-logo h1 {
+                font-size: 1.75rem;
             }
 
-            .test-btn {
-                width: 100%;
-                justify-content: center;
+            .data-table {
+                font-size: 0.8rem;
             }
 
-            .combo-table {
-                font-size: 0.85rem;
-            }
-
-            .combo-table th,
-            .combo-table td {
-                padding: 10px 8px;
+            .data-table th,
+            .data-table td {
+                padding: 8px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🍰 餐品推荐系统</h1>
-            <p>✨ 智能推荐 · 贴心服务 · 美味相伴 ✨</p>
+    <header class="header">
+        <div class="container header-content">
+            <h1>
+                <span class="header-icon">🍽️</span>
+                餐品推荐系统
+            </h1>
+            <nav class="header-links">
+                <a href="#combos">套餐管理</a>
+                <a href="#test">测试</a>
+            </nav>
         </div>
+    </header>
 
-        <div class="card">
-            <div class="card-title">
-                <span class="icon">🍽️</span>
-                <span>套餐管理</span>
+    <main>
+        <section class="search-section" id="test">
+            <div class="container">
+                <div class="search-logo">
+                    <h1><span>餐品</span>推荐</h1>
+                </div>
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="userInput" placeholder="输入您的需求，比如：一份600大卡的减脂套餐" onkeypress="if(event.key==='Enter') testWorkflow()">
+                    <button class="search-btn" onclick="testWorkflow()">推荐</button>
+                </div>
             </div>
-            <button class="btn btn-primary" onclick="openAddModal()">
-                <span>✨</span> 添加套餐
-            </button>
-            <table class="combo-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>套餐名称</th>
-                        <th>单品</th>
-                        <th>标签</th>
-                        <th>热量</th>
-                        <th>状态</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="combosBody">
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <div class="icon">🍕</div>
-                                <div>加载中...</div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        </section>
 
-        <div class="card">
-            <div class="card-title">
-                <span class="icon">🧪</span>
-                <span>测试工作流</span>
+        <section class="results-section">
+            <div class="container">
+                <div id="loading">
+                    <div class="loading-spinner"></div>
+                    <div>正在分析中...</div>
+                </div>
+                <div id="responseArea"></div>
             </div>
+        </section>
 
-            <div class="test-input-wrapper">
-                <input type="text" id="userInput" placeholder="输入您的需求，比如：我要一份带圣代的减脂餐，不要油炸物~"
-                       onkeypress="if(event.key==='Enter') testWorkflow()">
-                <button class="test-btn" onclick="testWorkflow()">
-                    <span>🚀</span> 开始测试
-                </button>
+        <section class="card-section" id="combos">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">套餐管理</h2>
+                    <button class="btn btn-primary" onclick="openAddModal()">添加套餐</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>套餐名称</th>
+                            <th>单品</th>
+                            <th>标签</th>
+                            <th>热量</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="combosBody">
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">加载中...</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <div id="loading">
-                <div class="spinner"></div>
-                <div class="loading-text">小正在努力思考中...</div>
-            </div>
-
-            <div id="responseArea"></div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <!-- Add Modal -->
     <div id="addModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><span>✨</span> 添加套餐</h3>
+                <h3>添加套餐</h3>
                 <button class="modal-close" onclick="closeModal('addModal')">&times;</button>
             </div>
             <div class="input-group">
@@ -720,9 +764,10 @@
                 <label>销量</label>
                 <input type="number" id="addSales" placeholder="比如：1000">
             </div>
-            <button class="btn btn-primary" style="width:100%;padding:14px;" onclick="addCombo()">
-                <span>✨</span> 保存套餐
-            </button>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('addModal')">取消</button>
+                <button class="btn btn-primary" onclick="addCombo()">保存</button>
+            </div>
         </div>
     </div>
 
@@ -730,7 +775,7 @@
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><span>✏️</span> 编辑套餐</h3>
+                <h3>编辑套餐</h3>
                 <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
             </div>
             <input type="hidden" id="editId">
@@ -757,13 +802,14 @@
             <div class="input-group">
                 <label>状态</label>
                 <select id="editStatus">
-                    <option value="on_shelf">✨ 上架</option>
-                    <option value="off_shelf">💤 下架</option>
+                    <option value="on_shelf">上架</option>
+                    <option value="off_shelf">下架</option>
                 </select>
             </div>
-            <button class="btn btn-primary" style="width:100%;padding:14px;" onclick="updateCombo()">
-                <span>💾</span> 保存修改
-            </button>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('editModal')">取消</button>
+                <button class="btn btn-primary" onclick="updateCombo()">保存</button>
+            </div>
         </div>
     </div>
 
@@ -777,29 +823,21 @@
                 const tbody = document.getElementById('combosBody');
 
                 if (combos.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="7">
-                                <div class="empty-state">
-                                    <div class="icon">🍕</div>
-                                    <div>暂无套餐数据，试试添加一个吧~</div>
-                                </div>
-                            </td>
-                        </tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">暂无套餐数据</div></td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = combos.map(combo => `
                     <tr>
-                        <td><strong>${combo.combo_id}</strong></td>
-                        <td>${combo.combo_name}</td>
-                        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${combo.items}</td>
-                        <td>${combo.tags.split(',').map(t => `<span class="tag tag-pink">${t.trim()}</span>`).join(' ')}</td>
-                        <td><span class="tag tag-yellow">🔥 ${combo.calories}大卡</span></td>
-                        <td><span class="status-badge ${combo.status === 'on_shelf' ? 'status-on' : 'status-off'}">${combo.status === 'on_shelf' ? '✨ 上架' : '💤 下架'}</span></td>
+                        <td>${combo.combo_id}</td>
+                        <td><strong>${combo.combo_name}</strong></td>
+                        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;">${combo.items}</td>
+                        <td>${combo.tags.split(',').map(t => `<span class="tag tag-blue">${t.trim()}</span>`).join('')}</td>
+                        <td><span class="tag tag-yellow">${combo.calories}大卡</span></td>
+                        <td><span class="status-badge ${combo.status === 'on_shelf' ? 'status-on' : 'status-off'}">${combo.status === 'on_shelf' ? '上架' : '下架'}</span></td>
                         <td>
-                            <button class="btn btn-secondary btn-sm" onclick="openEditModal(${combo.combo_id})">✏️</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteCombo(${combo.combo_id})">🗑️</button>
+                            <button class="btn btn-secondary action-btn" onclick="openEditModal(${combo.combo_id})">编辑</button>
+                            <button class="btn btn-danger action-btn" onclick="deleteCombo(${combo.combo_id})">删除</button>
                         </td>
                     </tr>
                 `).join('');
@@ -828,7 +866,7 @@
 
                 document.getElementById('editModal').style.display = 'flex';
             } catch (error) {
-                alert('加载失败: ' + error);
+                alert('加载失败');
             }
         }
 
@@ -844,7 +882,7 @@
             const sales = parseInt(document.getElementById('addSales').value) || 0;
 
             if (!name || !items || !tags) {
-                alert('请填写完整信息哦~');
+                alert('请填写完整信息');
                 return;
             }
 
@@ -862,18 +900,14 @@
                 });
 
                 if (response.ok) {
-                    alert('添加成功啦~ ✨');
                     closeModal('addModal');
                     loadCombos();
                     ['addName', 'addItems', 'addTags', 'addCalories', 'addSales'].forEach(id => {
                         document.getElementById(id).value = '';
                     });
-                } else {
-                    const error = await response.json();
-                    alert('添加失败: ' + error.error);
                 }
             } catch (error) {
-                alert('添加失败: ' + error);
+                alert('添加失败');
             }
         }
 
@@ -901,15 +935,11 @@
                 });
 
                 if (response.ok) {
-                    alert('更新成功啦~ ✨');
                     closeModal('editModal');
                     loadCombos();
-                } else {
-                    const error = await response.json();
-                    alert('更新失败: ' + error.error);
                 }
             } catch (error) {
-                alert('更新失败: ' + error);
+                alert('更新失败');
             }
         }
 
@@ -919,23 +949,16 @@
             try {
                 const response = await fetch(`/api/combos/${id}`, {method: 'DELETE'});
                 if (response.ok) {
-                    alert('删除成功~');
                     loadCombos();
-                } else {
-                    const error = await response.json();
-                    alert('删除失败: ' + error.error);
                 }
             } catch (error) {
-                alert('删除失败: ' + error);
+                alert('删除失败');
             }
         }
 
         async function testWorkflow() {
             const userInput = document.getElementById('userInput').value.trim();
-            if (!userInput) {
-                alert('请输入您的需求哦~');
-                return;
-            }
+            if (!userInput) return;
 
             const loading = document.getElementById('loading');
             const responseArea = document.getElementById('responseArea');
@@ -953,12 +976,12 @@
                 const result = await response.json();
 
                 if (result.error) {
-                    responseArea.innerHTML = `<div style="color:#E74C3C;padding:20px;">😢 出错了：${result.error}</div>`;
+                    responseArea.innerHTML = `<div class="result-card" style="color:#c5221f;">出错了：${result.error}</div>`;
                 } else {
                     renderResult(result);
                 }
             } catch (error) {
-                responseArea.innerHTML = `<div style="color:#E74C3C;padding:20px;">😢 请求失败：${error}</div>`;
+                responseArea.innerHTML = `<div class="result-card" style="color:#c5221f;">请求失败</div>`;
             } finally {
                 loading.style.display = 'none';
             }
@@ -967,95 +990,84 @@
         function renderResult(result) {
             let html = '';
 
-            // Route Badge
-            const routeIcons = {
-                'perfect_match': '🎉',
-                'fallback': '🤔',
-                'no_match': '😢'
-            };
+            const routeClass = result.route_decision;
             const routeLabels = {
                 'perfect_match': '完美匹配',
                 'fallback': '妥协推荐',
                 'no_match': '无匹配'
             };
-            const routeClass = result.route_decision;
 
-            html += `<div style="margin-bottom:20px;">
-                <div style="color:#8B7B9B;margin-bottom:8px;">💬 ${result.user_input}</div>
-                <span class="route-badge route-${routeClass}">${routeIcons[routeClass]} ${routeLabels[routeClass]}</span>
-            </div>`;
+            html += `<div class="result-card">
+                <div class="result-header">
+                    <div class="result-query">
+                        <strong>${result.user_input}</strong>
+                    </div>
+                    <span class="route-badge route-${routeClass}">${routeLabels[routeClass]}</span>
+                </div>`;
 
-            // Calorie Range
-            if (result.calorie_range) {
-                html += `<div style="margin-bottom:16px;color:#5D4E6D;">
-                    🔥 热量范围：<strong>${result.calorie_range.lower_bound} - ${result.calorie_range.upper_bound}</strong> 大卡
-                    ${result.target_calorie ? `(目标: ${result.target_calorie}大卡)` : ''}
+            if (result.demands && result.demands.length > 0) {
+                html += `<div class="demands-section">
+                    <div class="demands-label">提取的需求</div>
+                    <div class="demands-tags">
+                        ${result.demands.map(d => `<span class="demand-tag">${d.content}</span>`).join('')}
+                    </div>
                 </div>`;
             }
 
-            // Demands
-            if (result.demands && result.demands.length > 0) {
-                html += `<div class="section-title">✨ 提取的需求</div>`;
-                html += result.demands.map(d => `<span class="demand-tag">${d.content}</span>`).join('');
-            }
-
-            // Match Summary
-            html += `<div style="margin-top:20px;">
-                📊 召回候选：<strong>${result.combos_count}</strong> 个
+            html += `<div class="stats">
+                <div class="stat-item">热量范围：<span class="stat-value">${result.calorie_range?.lower_bound || 0} - ${result.calorie_range?.upper_bound || 0}</span> 大卡</div>
+                <div class="stat-item">召回候选：<span class="stat-value">${result.combos_count || 0}</span> 个</div>
             </div>`;
 
-            // Perfect Matches
-            if (result.perfect_matches && result.perfect_matches.length > 0) {
-                html += `<div class="section-title">🎯 完美匹配</div>`;
-                result.perfect_matches.forEach(combo => {
-                    html += renderMatchCard(combo, 'perfect');
+            const allMatches = [
+                ...(result.perfect_matches || []).map(c => ({...c, type: 'perfect'})),
+                ...(result.partial_matches || []).map(c => ({...c, type: 'partial'}))
+            ];
+
+            if (allMatches.length > 0) {
+                html += `<div class="match-cards" style="margin-top:20px;">`;
+                allMatches.forEach(combo => {
+                    html += renderMatchCard(combo, combo.type);
                 });
+                html += `</div>`;
             }
 
-            // Partial Matches
-            if (result.partial_matches && result.partial_matches.length > 0) {
-                html += `<div class="section-title">💭 部分匹配</div>`;
-                result.partial_matches.forEach(combo => {
-                    html += renderMatchCard(combo, 'partial');
-                });
-            }
-
-            // Final Response
             if (result.final_response) {
                 html += `<div class="final-response">
-                    <div class="final-response-label">💬 小助手说</div>
+                    <div class="final-response-label">推荐回复</div>
                     <div class="final-response-content">${result.final_response}</div>
                 </div>`;
             }
+
+            html += `</div>`;
 
             document.getElementById('responseArea').innerHTML = html;
         }
 
         function renderMatchCard(combo, type) {
-            const scoreClass = type === 'perfect' ? 'full' : 'partial';
-            const scoreIcon = type === 'perfect' ? '✨' : '💪';
-            const cardClass = type === 'perfect' ? 'perfect' : 'partial';
+            const iconClass = type === 'perfect' ? 'perfect' : 'partial';
+            const icon = type === 'perfect' ? '✓' : '~';
 
             let resultsHtml = combo.results.map(r => `
-                <div class="match-detail">
-                    <span class="demand-check ${r.match ? 'pass' : 'fail'}">${r.match ? '✓' : '✗'}</span>
+                <div class="demand-item">
+                    <span class="demand-icon ${r.match ? 'pass' : 'fail'}">${r.match ? '✓' : '✗'}</span>
                     <span class="demand-text">${r.demand}</span>
                 </div>
-                <div class="demand-reason">${r.reason}</div>
+                ${r.reason ? `<div class="demand-reason">${r.reason}</div>` : ''}
             `).join('');
 
-            let unmetHtml = '';
-            if (combo.unmet_reasons && combo.unmet_reasons.length > 0) {
-                unmetHtml = `<div class="unmet-reasons">😢 ${combo.unmet_reasons.join(', ')}</div>`;
-            }
-
-            return `<div class="match-card ${cardClass}">
-                <div class="match-header">
-                    <span class="match-name">🍽️ ${combo.combo_name}</span>
-                    <span class="match-score ${scoreClass}">${scoreIcon} ${combo.score}/${combo.total_demands}</span>
+            return `<div class="match-card">
+                <div class="match-icon ${iconClass}">${icon}</div>
+                <div class="match-content">
+                    <div class="match-name">${combo.combo_name}</div>
+                    <div class="match-details">
+                        <span class="match-tag">${combo.items?.split(',').slice(0, 3).join(', ')}</span>
+                        <span class="match-calories">${combo.combo_name?.includes('素食') ? '' : ''}${combo.score || 0}/${combo.total_demands || 0} 满足</span>
+                    </div>
+                    <div class="demand-list">
+                        ${resultsHtml}
+                    </div>
                 </div>
-                ${resultsHtml}
-                ${unmetHtml}
             </div>`;
         }
 
